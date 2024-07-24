@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-Application/Pods-Application-frameworks.sh
+${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework
+${BUILT_PRODUCTS_DIR}/Resolver/Resolver.framework

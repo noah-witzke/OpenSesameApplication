@@ -1,0 +1,31 @@
+PODS:
+  - CryptoSwift (1.7.1)
+  - Resolver (1.5.1)
+  - SmackSDK (1.4.0):
+    - CryptoSwift (~> 1.7.0)
+    - Resolver (~> 1.5.0)
+    - SwiftLint (~> 0.51.0)
+  - SwiftLint (0.51.0)
+
+DEPENDENCIES:
+  - SmackSDK (from `./SmackSDK`)
+
+SPEC REPOS:
+  trunk:
+    - CryptoSwift
+    - Resolver
+    - SwiftLint
+
+EXTERNAL SOURCES:
+  SmackSDK:
+    :path: "./SmackSDK"
+
+SPEC CHECKSUMS:
+  CryptoSwift: d3d18dc357932f7e6d580689e065cf1f176007c1
+  Resolver: 0e2ce51257e9366c54afe1b9e9be25059e9b9300
+  SmackSDK: 154a30eaf509d222b951d594b02b2e83fdaad274
+  SwiftLint: 1b7561918a19e23bfed960e40759086e70f4dba5
+
+PODFILE CHECKSUM: 3c19cfcc6eefab833e6d496c1546b330fda5718f
+
+COCOAPODS: 1.15.2

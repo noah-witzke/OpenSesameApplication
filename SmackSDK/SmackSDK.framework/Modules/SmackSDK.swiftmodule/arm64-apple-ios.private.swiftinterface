@@ -1,0 +1,568 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SmackSDK
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import CoreNFC
+import CryptoSwift
+import Foundation
+import Resolver
+import Swift
+import SwiftUI
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum MailboxMessageValidReturnCode : Swift.CaseIterable {
+  case callAppFunction
+  case callAppFunctionError
+  case writeWordError
+  case writeHalfWordError
+  case writeByteError
+  case readWordError
+  case readHalfWordError
+  case readByteError
+  public static func == (a: SmackSDK.MailboxMessageValidReturnCode, b: SmackSDK.MailboxMessageValidReturnCode) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias AllCases = [SmackSDK.MailboxMessageValidReturnCode]
+  public static var allCases: [SmackSDK.MailboxMessageValidReturnCode] {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol SmackClientApi {
+  var tag: (any SmackSDK.NfcTagApi)! { get set }
+  var message: Swift.String { get set }
+  var isConnected: Swift.Bool { get }
+  func connect(stream: @escaping (Swift.Result<SmackSDK.SmackClientConnectionState, any Swift.Error>) -> Swift.Void)
+  func disconnect(reason: SmackSDK.NfcSessionDisconnectReason)
+  func send(request: SmackSDK.SmackRequest, to tag: (any SmackSDK.NfcTagApi)?, completion: @escaping (Swift.Result<SmackSDK.SmackResponse, any Swift.Error>) -> Swift.Void)
+  func send(requests: [SmackSDK.SmackRequest], to tag: (any SmackSDK.NfcTagApi)?, completion: @escaping (Swift.Result<[SmackSDK.SmackResponse], any Swift.Error>) -> Swift.Void)
+}
+public class MotorControlParameters {
+  public init(clampingVoltage: SmackSDK.ClampingVoltage, totalMotorRuntime: SmackSDK.Short, configMethod: SmackSDK.ConfigMethod, singleMovementStartVoltage: SmackSDK.Short? = nil, voltageControlledStartVoltage: SmackSDK.Short? = nil, voltageControlledStopVoltage: SmackSDK.Short? = nil, timerControlledOnTime: SmackSDK.Short? = nil, timerControlledOffTime: SmackSDK.Short? = nil)
+  @objc deinit
+}
+public struct ValidatePasswordInformation {
+  public init(password: Swift.String, userName: Swift.String, date: Foundation.Date)
+}
+public enum MailboxDataPoint : SmackSDK.DataPoint {
+  case smackFlags(key: SmackSDK.LockKey)
+  case chargeRaw(key: SmackSDK.LockKey)
+  case chargeRawThreshold(key: SmackSDK.LockKey)
+  case chargePercent(key: SmackSDK.LockKey)
+  case globalCounter(key: SmackSDK.LockKey)
+  case temperature(key: SmackSDK.LockKey)
+  case scratch32
+  case scratch16
+  case scratch8
+  case scratchString(length: SmackSDK.Byte)
+  case firmwareName(key: SmackSDK.LockKey, length: SmackSDK.Byte)
+  case firmwareVersion(key: SmackSDK.LockKey)
+  case uid
+  public var value: [SmackSDK.Byte] {
+    get
+  }
+  public var dataType: SmackSDK.DataPointType {
+    get
+  }
+  public var lockKey: SmackSDK.LockKey? {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public class SmackApi : SmackSDK.SmackProtocol, SmackSDK.SmackConfigurable {
+  final public let config: SmackSDK.SmackConfig
+  public init(target: SmackSDK.SmackTarget, config: SmackSDK.SmackConfig = SmackConfig())
+  @objc deinit
+}
+public enum MeasurementDataPoint : SmackSDK.DataPoint {
+  case pressure
+  case temperature
+  case humidity
+  case other
+  public var value: [SmackSDK.Byte] {
+    get
+  }
+  public var dataType: SmackSDK.DataPointType {
+    get
+  }
+  public var lockKey: SmackSDK.LockKey? {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public static func == (a: SmackSDK.MeasurementDataPoint, b: SmackSDK.MeasurementDataPoint) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol Logger {
+  func verbose(_ message: Swift.String)
+  func debug(_ message: Swift.String)
+  func info(_ message: Swift.String)
+  func warning(_ message: Swift.String)
+  func error(_ message: Swift.String)
+}
+public struct SmackResponse : Swift.Equatable {
+  public init(command: SmackSDK.SmackCommand, data: Foundation.Data)
+  public var bytes: [SmackSDK.Byte] {
+    get
+  }
+  public static func == (a: SmackSDK.SmackResponse, b: SmackSDK.SmackResponse) -> Swift.Bool
+}
+extension Swift.Array where Element == Swift.UInt8 {
+  public func contentEquals(_ other: [Element]) -> Swift.Bool
+}
+public protocol MailboxProtocol {
+  func observeChargeLevel(key: SmackSDK.LockKey, stream: @escaping (Swift.Result<SmackSDK.ChargeLevel, any Swift.Error>) -> Swift.Void)
+  func test(stream: @escaping (Swift.Result<SmackSDK.MailboxTestResult, any Swift.Error>) -> Swift.Void)
+  func resetData(stream: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func readWord(index: Swift.Int, completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  func writeWord(index: Swift.Int, word: [SmackSDK.Byte], completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  func readDataPoint(dataPoint: any SmackSDK.DataPoint, completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  func readDataPointWithDelay(dataPoint: any SmackSDK.DataPoint, delay: Swift.Double, completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  func writeDataPoint(dataPoint: any SmackSDK.DataPoint, data: [SmackSDK.Byte], completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  func callAppFunction(index: SmackSDK.Byte, data: [SmackSDK.Byte], completion: @escaping (Swift.Result<[[SmackSDK.Byte]], any Swift.Error>) -> Swift.Void)
+  func getUid(completion: @escaping (Swift.Result<SmackSDK.Long, any Swift.Error>) -> Swift.Void)
+}
+public enum ClampingVoltage {
+  case low
+  case medium
+  case high
+  public static func == (a: SmackSDK.ClampingVoltage, b: SmackSDK.ClampingVoltage) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension SmackSDK.ClampingVoltage {
+  public var milliVolt: SmackSDK.Short {
+    get
+  }
+}
+public struct Lock {
+  public let id: SmackSDK.Long
+  public let isSetup: Swift.Bool
+  public init(id: SmackSDK.Long, isSetup: Swift.Bool)
+}
+public enum LockState<Response> : Swift.Equatable where Response : Swift.Equatable {
+  case idle
+  case scanning
+  case charging(chargeLevel: SmackSDK.ChargeLevel)
+  case doing
+  case completed(response: Response)
+  public static func == (a: SmackSDK.LockState<Response>, b: SmackSDK.LockState<Response>) -> Swift.Bool
+}
+public protocol LockProtocol {
+  func getLock(cancelIfNotSetup: Swift.Bool, completion: @escaping (Swift.Result<SmackSDK.Lock, any Swift.Error>) -> Swift.Void)
+  func getFirmwareName(key: SmackSDK.LockKey, completion: @escaping (Swift.Result<Swift.String, any Swift.Error>) -> Swift.Void)
+  func getFirmwareVersion(key: SmackSDK.LockKey, completion: @escaping (Swift.Result<Swift.String, any Swift.Error>) -> Swift.Void)
+  func validatePassword(information: SmackSDK.ValidatePasswordInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<SmackSDK.LockKey>, any Swift.Error>) -> Swift.Void)
+  func lock(information: SmackSDK.LockActionInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<Swift.Bool>, any Swift.Error>) -> Swift.Void)
+  func unlock(information: SmackSDK.LockActionInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<Swift.Bool>, any Swift.Error>) -> Swift.Void)
+  func getHistory(information: SmackSDK.LockActionInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<SmackSDK.LockHistory>, any Swift.Error>) -> Swift.Void)
+  func setLockKey(setupInformation: SmackSDK.LockSetupInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<SmackSDK.LockKey>, any Swift.Error>) -> Swift.Void)
+  func writeMotorControlParameters(_ parameters: SmackSDK.MotorControlParameters, key: SmackSDK.LockKey, completion: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+}
+public enum LockDataPoint : SmackSDK.DataPoint {
+  case status(key: SmackSDK.LockKey)
+  case progress(key: SmackSDK.LockKey)
+  case stop(key: SmackSDK.LockKey)
+  case date(key: SmackSDK.LockKey)
+  case userName(key: SmackSDK.LockKey, length: SmackSDK.Byte)
+  case lockId
+  case arm(key: SmackSDK.LockKey)
+  case control(key: SmackSDK.LockKey)
+  case logCount(key: SmackSDK.LockKey)
+  case logSelect(key: SmackSDK.LockKey)
+  case logStatus(key: SmackSDK.LockKey)
+  case logDate(key: SmackSDK.LockKey)
+  case logUser(key: SmackSDK.LockKey, length: SmackSDK.Byte)
+  case userSelect
+  case userCount
+  case lockKey(key: SmackSDK.LockKey, length: SmackSDK.Byte)
+  case lockKeyCheck(key: SmackSDK.LockKey, length: SmackSDK.Byte)
+  case lockKeyStore(key: SmackSDK.LockKey, length: SmackSDK.Byte)
+  public var value: [SmackSDK.Byte] {
+    get
+  }
+  public var dataType: SmackSDK.DataPointType {
+    get
+  }
+  public var lockKey: SmackSDK.LockKey? {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+extension Resolver : ResolverRegistering {
+  public static func registerAllServices()
+}
+public enum MotorControlDataPoint : SmackSDK.DataPoint {
+  case configMethod(key: SmackSDK.LockKey)
+  case clampingVoltage(key: SmackSDK.LockKey)
+  case voltageControlledStartVoltage(key: SmackSDK.LockKey)
+  case voltageControlledStopVoltage(key: SmackSDK.LockKey)
+  case timerControlledOnTime(key: SmackSDK.LockKey)
+  case timerControlledOffTime(key: SmackSDK.LockKey)
+  case singleMovementStartVoltage(key: SmackSDK.LockKey)
+  case totalMotorRuntime(key: SmackSDK.LockKey)
+  public var value: [SmackSDK.Byte] {
+    get
+  }
+  public var dataType: SmackSDK.DataPointType {
+    get
+  }
+  public var lockKey: SmackSDK.LockKey? {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public class LockApi : SmackSDK.LockProtocol, SmackSDK.SmackConfigurable {
+  final public let config: SmackSDK.SmackConfig
+  public init(target: SmackSDK.SmackTarget, config: SmackSDK.SmackConfig = SmackConfig())
+  public func getLock(cancelIfNotSetup: Swift.Bool, completion: @escaping (Swift.Result<SmackSDK.Lock, any Swift.Error>) -> Swift.Void)
+  public func getFirmwareName(key: SmackSDK.LockKey, completion: @escaping (Swift.Result<Swift.String, any Swift.Error>) -> Swift.Void)
+  public func getFirmwareVersion(key: SmackSDK.LockKey, completion: @escaping (Swift.Result<Swift.String, any Swift.Error>) -> Swift.Void)
+  public func validatePassword(information: SmackSDK.ValidatePasswordInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<SmackSDK.LockKey>, any Swift.Error>) -> Swift.Void)
+  public func lock(information: SmackSDK.LockActionInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<Swift.Bool>, any Swift.Error>) -> Swift.Void)
+  public func unlock(information: SmackSDK.LockActionInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<Swift.Bool>, any Swift.Error>) -> Swift.Void)
+  public func getHistory(information: SmackSDK.LockActionInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<SmackSDK.LockHistory>, any Swift.Error>) -> Swift.Void)
+  public func setLockKey(setupInformation: SmackSDK.LockSetupInformation, stream: @escaping (Swift.Result<SmackSDK.LockState<SmackSDK.LockKey>, any Swift.Error>) -> Swift.Void)
+  public func writeMotorControlParameters(_ parameters: SmackSDK.MotorControlParameters, key: SmackSDK.LockKey, completion: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+public struct LockHistoryItem {
+  public let type: SmackSDK.LogType
+  public let date: Foundation.Date
+  public let name: Swift.String
+  public init(type: SmackSDK.LogType, date: Foundation.Date, name: Swift.String)
+}
+public class SmackClient : SmackSDK.SmackClientApi, SmackSDK.SmackConfigurable {
+  final public let config: SmackSDK.SmackConfig
+  public var tag: (any SmackSDK.NfcTagApi)!
+  public init(config: SmackSDK.SmackConfig = SmackConfig())
+  public var message: Swift.String {
+    get
+    set
+  }
+  public var isConnected: Swift.Bool {
+    get
+  }
+  public func connect(stream: @escaping (Swift.Result<SmackSDK.SmackClientConnectionState, any Swift.Error>) -> Swift.Void)
+  public func disconnect(reason: SmackSDK.NfcSessionDisconnectReason)
+  public func send(request: SmackSDK.SmackRequest, to tag: (any SmackSDK.NfcTagApi)?, completion: @escaping (Swift.Result<SmackSDK.SmackResponse, any Swift.Error>) -> Swift.Void)
+  public func send(requests: [SmackSDK.SmackRequest], to tag: (any SmackSDK.NfcTagApi)?, completion: @escaping (Swift.Result<[SmackSDK.SmackResponse], any Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+public protocol SmackConfigurable {
+  var config: SmackSDK.SmackConfig { get }
+}
+public typealias LockKey = [SmackSDK.Byte]
+public struct MailboxTestResult {
+  public let sentCount: Swift.Int
+  public let receivedCount: Swift.Int
+  public let divergentCount: Swift.Int
+  public init(sentCount: Swift.Int, receivedCount: Swift.Int, divergentCount: Swift.Int)
+}
+public class MailboxApi : SmackSDK.MailboxProtocol, SmackSDK.SmackConfigurable {
+  final public let config: SmackSDK.SmackConfig
+  public init(target: SmackSDK.SmackTarget, config: SmackSDK.SmackConfig = SmackConfig())
+  public func observeChargeLevel(key: SmackSDK.LockKey, stream: @escaping (Swift.Result<SmackSDK.ChargeLevel, any Swift.Error>) -> Swift.Void)
+  public func test(stream: @escaping (Swift.Result<SmackSDK.MailboxTestResult, any Swift.Error>) -> Swift.Void)
+  public func resetData(stream: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func readWord(index: Swift.Int, completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  public func writeWord(index: Swift.Int, word: [SmackSDK.Byte], completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  public func readDataPoint(dataPoint: any SmackSDK.DataPoint, completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  public func readDataPointWithDelay(dataPoint: any SmackSDK.DataPoint, delay: Swift.Double, completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  public func writeDataPoint(dataPoint: any SmackSDK.DataPoint, data: [SmackSDK.Byte], completion: @escaping (Swift.Result<[SmackSDK.Byte], any Swift.Error>) -> Swift.Void)
+  public func callAppFunction(index: SmackSDK.Byte, data: [SmackSDK.Byte], completion: @escaping (Swift.Result<[[SmackSDK.Byte]], any Swift.Error>) -> Swift.Void)
+  public func getUid(completion: @escaping (Swift.Result<SmackSDK.Long, any Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+public protocol MeasurementProtocol {
+  func getPressure(completion: @escaping (Swift.Result<Swift.Double, any Swift.Error>) -> Swift.Void)
+  func getTemperature(completion: @escaping (Swift.Result<Swift.Double, any Swift.Error>) -> Swift.Void)
+  func getHumidity(completion: @escaping (Swift.Result<Swift.Double, any Swift.Error>) -> Swift.Void)
+  func getOther(completion: @escaping (Swift.Result<Swift.Int, any Swift.Error>) -> Swift.Void)
+}
+public typealias Byte = Swift.UInt8
+public enum MailboxError : Swift.Error {
+  case wordEmpty
+  case indexOutOfRange
+  case invalid(returnCode: SmackSDK.MailboxMessageValidReturnCode?)
+  case headerResponseValidationFailed
+  case dataPointHeaderResponseValidationFailed
+  case logStatusUnknown
+  case logUserNameEmpty
+  case wrongKey
+  case callAppFunctionValidationFailed
+}
+extension SmackSDK.MailboxError : Swift.Equatable {
+  public static func == (lhs: SmackSDK.MailboxError, rhs: SmackSDK.MailboxError) -> Swift.Bool
+}
+extension SmackSDK.MailboxError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public struct SmackRequest {
+  public let command: SmackSDK.SmackCommand
+  public let address: [SmackSDK.Byte]?
+  public let word: [SmackSDK.Byte]?
+  public let padding: [SmackSDK.Byte]?
+  public init(command: SmackSDK.SmackCommand, address: [SmackSDK.Byte]? = nil, word: [SmackSDK.Byte]? = nil, padding: [SmackSDK.Byte]? = nil)
+  public var bytes: [SmackSDK.Byte] {
+    get
+  }
+}
+extension Swift.UInt8 {
+  public static let wordSize: Swift.Int
+  public static let halfWordSize: Swift.Int
+}
+extension Swift.Array where Element == Swift.UInt8 {
+  public var hex: Swift.String {
+    get
+  }
+  public var hexArray: Swift.String {
+    get
+  }
+  public var uInt32: Swift.UInt32 {
+    get
+  }
+  public var uInt64: SmackSDK.Long {
+    get
+  }
+  public var int16: Swift.Int16 {
+    get
+  }
+  public var int32: Swift.Int32 {
+    get
+  }
+  public var int64: Swift.Int64 {
+    get
+  }
+  public var short: SmackSDK.Short {
+    get
+  }
+  public var string: Swift.String? {
+    get
+  }
+  public var date: Foundation.Date {
+    get
+  }
+  public var trimmingTrailingZeroes: [SmackSDK.Byte] {
+    get
+  }
+  public var firstByte: SmackSDK.Byte {
+    get
+  }
+  public func sliceWordsPadded() -> [(wordIndex: Swift.Int, word: [SmackSDK.Byte])]
+}
+public protocol SmackDelegate : AnyObject {
+  func onConnect(tag: any SmackSDK.NfcTagApi)
+  func onDisconnect(message: Swift.String?)
+}
+extension Swift.Array {
+  public func padded(with element: Element, length: Swift.Int) -> [Element]
+}
+extension Swift.Array {
+  public subscript(safe index: Swift.Array<Element>.Index) -> Element? {
+    get
+  }
+}
+public protocol SmackProtocol {
+}
+public class MeasurementApi : SmackSDK.MeasurementProtocol, SmackSDK.SmackConfigurable {
+  final public let config: SmackSDK.SmackConfig
+  public init(target: SmackSDK.SmackTarget, config: SmackSDK.SmackConfig = SmackConfig())
+  public func getPressure(completion: @escaping (Swift.Result<Swift.Double, any Swift.Error>) -> Swift.Void)
+  public func getTemperature(completion: @escaping (Swift.Result<Swift.Double, any Swift.Error>) -> Swift.Void)
+  public func getHumidity(completion: @escaping (Swift.Result<Swift.Double, any Swift.Error>) -> Swift.Void)
+  public func getOther(completion: @escaping (Swift.Result<Swift.Int, any Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+public enum DataPointType : Swift.Equatable {
+  case bool
+  case int8
+  case uInt8
+  case int16
+  case uInt16
+  case int32
+  case uInt32
+  case int64
+  case uInt64
+  case array(length: SmackSDK.Byte)
+  case string(length: SmackSDK.Byte)
+  public static func == (a: SmackSDK.DataPointType, b: SmackSDK.DataPointType) -> Swift.Bool
+}
+public enum SmackTarget {
+  case device(client: any SmackSDK.SmackClientApi)
+  case emulation
+}
+public enum SmackCommand {
+  case startProtocol
+  case writeWord
+  case readWord
+  case readMailboxParameter
+  case sendMessage
+  public static func == (a: SmackSDK.SmackCommand, b: SmackSDK.SmackCommand) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension SmackSDK.SmackCommand {
+  public var byte: SmackSDK.Byte {
+    get
+  }
+}
+public struct LockActionInformation {
+  public init(userName: Swift.String, date: Foundation.Date, key: SmackSDK.LockKey)
+}
+public protocol NfcTagApi {
+  var isAvailable: Swift.Bool { get }
+  func write(data: Foundation.Data, completion: @escaping (Swift.Result<Foundation.Data, any Swift.Error>) -> Swift.Void)
+}
+public enum SmackClientConnectionState {
+  case scanning
+  case connecting(tag: any SmackSDK.NfcTagApi)
+  case connected(tag: any SmackSDK.NfcTagApi)
+}
+extension Swift.Int16 {
+  public var withOneDecimal: Swift.Double {
+    get
+  }
+  public var withThreeDecimals: Swift.Double {
+    get
+  }
+}
+public enum ConfigMethod {
+  case singleStepControl
+  case stepwiseVoltageControlled
+  case stepwiseTimerControlled
+  public static func == (a: SmackSDK.ConfigMethod, b: SmackSDK.ConfigMethod) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension SmackSDK.ConfigMethod {
+  public var bytes: [SmackSDK.Byte] {
+    get
+  }
+}
+public struct SmackConfig {
+  public init(logging: SmackSDK.CombinedLogger = CombinedLogger(debugPrinter: DebugPrinter(), logPrinter: nil), delegate: (any SmackSDK.SmackDelegate)? = nil)
+}
+extension Swift.Array where Element == Swift.UInt8 {
+  public func paddedToWord() -> [Element]
+}
+public class LockHistory : Swift.Equatable {
+  public var historyItems: [SmackSDK.LockHistoryItem]
+  public init(numberOfItems: Swift.Int)
+  public static func == (lhs: SmackSDK.LockHistory, rhs: SmackSDK.LockHistory) -> Swift.Bool
+  @objc deinit
+}
+public typealias Long = Swift.UInt64
+public typealias Short = Swift.UInt16
+public struct ChargeLevel : Swift.Equatable, Swift.CustomStringConvertible {
+  public var percentage: Swift.Double {
+    get
+  }
+  public var isCharging: Swift.Bool {
+    get
+  }
+  public var isCharged: Swift.Bool {
+    get
+  }
+  public init(percentage: Swift.Double)
+  public var description: Swift.String {
+    get
+  }
+  public static func == (a: SmackSDK.ChargeLevel, b: SmackSDK.ChargeLevel) -> Swift.Bool
+}
+public class DebugPrinter : SmackSDK.Logger {
+  public init()
+  public func verbose(_ message: Swift.String)
+  public func debug(_ message: Swift.String)
+  public func info(_ message: Swift.String)
+  public func warning(_ message: Swift.String)
+  public func error(_ message: Swift.String)
+  @objc deinit
+}
+public protocol DataPoint {
+  var value: [SmackSDK.Byte] { get }
+  var dataType: SmackSDK.DataPointType { get }
+  var lockKey: SmackSDK.LockKey? { get }
+  var name: Swift.String { get }
+}
+public enum NfcSessionDisconnectReason {
+  case success
+  case error(message: Swift.String)
+}
+public class UserNameLengthValidator {
+  public static let maxUserNameByteCount: Swift.Int
+  public init()
+  public func validate(input: Swift.String) -> Swift.Result<Swift.Void, any Swift.Error>
+  @objc deinit
+}
+public enum LogType : Swift.CaseIterable {
+  case lock
+  case unlock
+  case changeKey
+  public static func == (a: SmackSDK.LogType, b: SmackSDK.LogType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias AllCases = [SmackSDK.LogType]
+  public static var allCases: [SmackSDK.LogType] {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct CombinedLogger {
+  public let debugPrinter: any SmackSDK.Logger
+  public let logPrinter: (any SmackSDK.Logger)?
+  public init(debugPrinter: any SmackSDK.Logger, logPrinter: (any SmackSDK.Logger)? = nil)
+}
+@_hasMissingDesignatedInitializers public class PasswordLengthRule {
+  public func isValid(password: Swift.String) -> Swift.Bool
+  @objc deinit
+}
+public struct LockSetupInformation {
+  public init(userName: Swift.String, date: Foundation.Date, supervisorKey: Swift.String, password: Swift.String)
+}
+public enum MailboxConnectionState {
+  case scanning
+  case connecting
+  case connected
+  case charging(chargeLevel: SmackSDK.ChargeLevel)
+  case charged
+}
+public class KeyGenerator {
+  public init()
+  public func generateKey(lockId: SmackSDK.Long, password: Swift.String) -> Swift.Result<SmackSDK.LockKey, any Swift.Error>
+  @objc deinit
+}
+extension SmackSDK.MailboxMessageValidReturnCode : Swift.Equatable {}
+extension SmackSDK.MailboxMessageValidReturnCode : Swift.Hashable {}
+extension SmackSDK.MeasurementDataPoint : Swift.Equatable {}
+extension SmackSDK.MeasurementDataPoint : Swift.Hashable {}
+extension SmackSDK.ClampingVoltage : Swift.Equatable {}
+extension SmackSDK.ClampingVoltage : Swift.Hashable {}
+extension SmackSDK.SmackClient : Resolving {}
+extension SmackSDK.SmackCommand : Swift.Equatable {}
+extension SmackSDK.SmackCommand : Swift.Hashable {}
+extension SmackSDK.ConfigMethod : Swift.Equatable {}
+extension SmackSDK.ConfigMethod : Swift.Hashable {}
+extension SmackSDK.LogType : Swift.Equatable {}
+extension SmackSDK.LogType : Swift.Hashable {}

@@ -1,0 +1,4 @@
+framework module SmackSDK {
+  header "SmackSDK-Swift.h"
+  requires objc
+}

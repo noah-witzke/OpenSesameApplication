@@ -1,0 +1,25 @@
+# See potential rules at: https://github.com/realm/SwiftLint
+
+included: # paths to include during linting. `--path` is ignored if present.
+  - SmackSDK
+
+excluded: # paths to ignore during linting. Takes precedence over `included`.
+  - SmackSDK/common/config
+  - SmackSDK/common/resources
+  
+disabled_rules: # rule identifiers to exclude from running
+  - trailing_whitespace
+  - multiple_closures_with_trailing_closure
+
+identifier_name:
+  min_length: 2
+  max_length:
+    warning: 40
+    error: 50
+
+custom_rules:
+  extension_declaration_missing_newline:
+    regex: '(extension|class|enum|protocol) [^\n]+\{ *\n{1} +[^\s\n]+'
+    name: "Missing newline after declaration"
+    message: "Enter a newline after opening brackets"
+    severity: warning
